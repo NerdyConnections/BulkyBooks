@@ -9,6 +9,10 @@ namespace AbbyRazor.Pages
 
         public IndexModel(ILogger<IndexModel> logger)
         {
+            //ROuting in asp.net razor pages maps the Pages folder
+            ///Index.cshtml maps to /Pages/Index.cshtml
+            //Index.cshtml
+
             _logger = logger;
         }
 
