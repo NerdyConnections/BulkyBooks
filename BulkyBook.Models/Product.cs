@@ -1,4 +1,5 @@
-﻿using System.ComponentModel;
+﻿using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -29,15 +30,18 @@ public class Product
     [Required]
     [Range(1, 10000, ErrorMessage = "Order must be between 1 to 10000")]
     public double Price100 { get; set; }
-
+    [ValidateNever]
     public string ImageUrl { get; set; }
     [Required]
+    [Display(Name ="Category")]
     public int CategoryId { get; set; }
     [ForeignKey("CategoryId")]
+    [ValidateNever]
     public Category Category { get; set; }
     [Required]
+    [Display(Name = "Cover Type")]
     public int CoverTypeId { get; set; }
-
+    [ValidateNever]
     public CoverType CoverType { get; set; }
 }
 

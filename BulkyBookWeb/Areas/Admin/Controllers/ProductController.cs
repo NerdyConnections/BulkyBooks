@@ -1,7 +1,7 @@
 ﻿using BulkyBook.DAL;
 using BulkyBook.DAL.Repository.IRepository;
 using BulkyBook.Models;
-
+using BulkyBook.Models.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
@@ -12,9 +12,11 @@ namespace BulkyBookWeb.Controllers
     {
         
         private readonly IUnitOfWork _unitOfWork;
-        public ProductController(IUnitOfWork unitOfWork)
+        private readonly IWebHostEnvironment _hostEnvironment;
+        public ProductController(IUnitOfWork unitOfWork , IWebHostEnvironment hostEnvironment)
         {
             _unitOfWork = unitOfWork;
+            _hostEnvironment = hostEnvironment;
         }
         public IActionResult Index()
         {
@@ -23,104 +25,78 @@ namespace BulkyBookWeb.Controllers
         }
         public IActionResult Upsert(int? id)
         {
-            Product product = new Product();
-            IEnumerable<SelectListItem> CategoryList = _unitOfWork.Category.GetAll().Select(
-                u => new SelectListItem
+            ProductVM productVM = new ProductVM()
+            {
+                Product = new Product(),
+                CategoryList = _unitOfWork.Category.GetAll().Select(u => new SelectListItem 
                 {
                     Text = u.Name,
                     Value = u.Id.ToString()
-                }
-            );
-            IEnumerable<SelectListItem> CoverTypeList = _unitOfWork.CoverType.GetAll().Select(
-                u => new SelectListItem
+                }),
+                CoverTypeList = _unitOfWork.CoverType.GetAll().Select(u => new SelectListItem
                 {
                     Text = u.Name,
                     Value = u.Id.ToString()
-                }
-            );
+                }),
+
+            };
+          
             if (id == null || id == 0)
             {
 
                 //create product
-                ViewBag.CategoryList = CategoryList;
-                ViewBag.CoverTypeList = CoverTypeList;
-                return View(product);
+               
+                return View(productVM);
             }
             else
             {
                 //update
-                var productFromDb = _unitOfWork.Product.GetFirstOrDefault(x => x.Id == id);
-                if (productFromDb == null)
-                {
-                    return NotFound();
-                }
-                else
-                {
+                productVM.Product = _unitOfWork.Product.GetFirstOrDefault(x => x.Id == id);
+               
                    
-                    return View(productFromDb);
-                }
+                    return View(productVM);
+                
             }
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Upsert(Product product)
+        public IActionResult Upsert(ProductVM obj, IFormFile? file)
         {
-            return View();
-        }
-            [HttpPost]
-[ValidateAntiForgeryToken]
-        public IActionResult Create(Category obj)
-        {
-            if (obj.Name==obj.DisplayOrder.ToString())
+            //,IFormFile? file
+            if (ModelState.IsValid)
             {
-                ModelState.AddModelError("Custom", "The DisplayOrder and Name cannot be same");
-                //ModelState.AddModelError("Name", "The DisplayOrder and Name cannot be same");
+                //save image
+                string wwwRootPath = _hostEnvironment.WebRootPath;
+               // if (file != null)
+               // {
+                    //file is uploaded
+                    //make sure file has an unique name
+                    string fileName = Guid.NewGuid().ToString();
+                    var uploads = Path.Combine(wwwRootPath, @"images\products");
+                   var extension = Path.GetExtension(file.FileName);
+                   using (var fileStreams = new FileStream(Path.Combine(uploads,fileName + extension),FileMode.Create))
+                   {
+                      file.CopyTo(fileStreams);
+                    }
+                    obj.Product.ImageUrl = @"\images\product\" + fileName + extension;
+                    //images uploaded and imageurl is set
+
+               // }
+                _unitOfWork.Product.Add(obj.Product);
+                _unitOfWork.Save();
+                TempData["success"] = "Product added successfully";
+                return RedirectToAction("Index");
 
             }
-            if (!ModelState.IsValid)
+            else
             {
-                return View(obj);
-            }
-            _unitOfWork.Category.Add(obj);
-            _unitOfWork.Save();
-            TempData["success"] = "Category created successfully";
 
-            return RedirectToAction("Index");
+            }
+            return View(obj);
         }
-        public IActionResult Edit(int? id)
-        {
-            if(id==null || id ==0)
-            {
-                return NotFound();
-            }
-            var categoryFromDb = _unitOfWork.Category.GetFirstOrDefault(x=>x.Id==id);
-            if (categoryFromDb==null)
-            {
-                return NotFound();
-            }
           
-            return View(categoryFromDb);
-        }
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public IActionResult Edit(Category obj)
-        {
-            if (obj.Name == obj.DisplayOrder.ToString())
-            {
-                ModelState.AddModelError("Custom", "The DisplayOrder and Name cannot be same");
-                //ModelState.AddModelError("Name", "The DisplayOrder and Name cannot be same");
-
-            }
-            if (!ModelState.IsValid)
-            {
-                return View(obj);
-            }
-            _unitOfWork.Category.Update(obj);//find primary key update all properties
-            _unitOfWork.Save();
-
-            TempData["success"] = "Category updated successfully";
-            return RedirectToAction("Index");
-        }
+      
+       
         public IActionResult Delete(int? id)
         {
             if (id == null || id == 0)
@@ -145,6 +121,12 @@ namespace BulkyBookWeb.Controllers
 
              TempData["success"] = "Category deleted successfully";
             return RedirectToAction("Index");
+        }
+        [HttpGet]
+        public IActionResult GetAll()
+        {
+            var productList = _unitOfWork.Product.GetAll(includeProperties:"Category,CoverType");
+            return Json(new { data = productList });
         }
     }
 }
