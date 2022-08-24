@@ -1,0 +1,33 @@
+﻿@using BulkyBook.Models
+@model CoverType
+
+<form method="post" asp-action="Delete">
+	<input asp-for="Id" type="hidden"/>
+	<div class="border p-3 mt-4">
+		<div class="row pb-2">
+
+			<h2 class="text-primary">Delete Cover Type</h2>
+		</div>
+		<div asp-validation-summary="All" class="text-danger"></div>
+		<div class="mb-3">
+			<label asp-for="Id"></label>
+				<input asp-for="Id" class="form-control" disabled/>
+				
+		</div>
+		<div class="mb-3">
+			<label asp-for="Name"></label>
+				<input asp-for="Name" class="form-control" disabled/>
+				
+		</div>
+		<button type="submit" class="btn btn-primary" style="width:150px">Delete	</button>	
+		<a asp-controller="CoverType" asp-action="Index" class="btn btn-secondary" style="width:150px">
+Back to List
+</a>
+	</div>
+</form>
+@section Scripts
+{
+	@{
+<partial name="_ValidationScriptsPartial"/>
+}
+}
