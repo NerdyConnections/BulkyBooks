@@ -21,6 +21,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\BulkyBook.DAL\BulkyBook.DAL.csproj" />
+    <ProjectReference Include="..\BulkyBook.Utility\BulkyBook.Utility.csproj" />
   </ItemGroup>
 
   <ItemGroup>

@@ -7,16 +7,17 @@ $(document).ready(function () {
 function loadDataTable() {
     dataTable = $('#tblData').DataTable({
         ajax: {
-            "url": "/Admin/Product/GetAll"
+            "url": "/Admin/Company/getAll"
 
         },
         "columns": [
+            { "data": "id", "width": "15%" },
             { "data": "name", "width": "15%" },
-            { "data": "streetaddress", "width": "15%" },
+            { "data": "streetAddress", "width": "15%" },
             { "data": "city", "width": "15%" },
             { "data": "state", "width": "15%" },
-            { "data": "postalcode.name", "width": "15%" },
-            { "data": "phonenumber", "width": "15%" },
+            { "data": "postalCode", "width": "15%" },
+            { "data": "phoneNumber", "width": "15%" },
             {
                 "data": "id",
                 "render": function (data) {

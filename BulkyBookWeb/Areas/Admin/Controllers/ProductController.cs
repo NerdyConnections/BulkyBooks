@@ -50,7 +50,7 @@ namespace BulkyBookWeb.Controllers
             }
             else
             {
-                //update
+                //retrieve from db, the categoryid and covertypeid will populate the dropdown list
                 productVM.Product = _unitOfWork.Product.GetFirstOrDefault(x => x.Id == id);
                
                    
