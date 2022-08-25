@@ -183,6 +183,7 @@ namespace BulkyBookWeb.Areas.Identity.Pages.Account
                         await _userManager.AddToRoleAsync(user, SD.Role_User_Indi);
                     }else
                     {
+                        //if a role is selected
                         await _userManager.AddToRoleAsync(user, Input.Role);
 
                     }
