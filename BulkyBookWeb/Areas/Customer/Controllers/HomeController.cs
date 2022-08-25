@@ -24,12 +24,12 @@ namespace BulkyBookWeb.Controllers
             IEnumerable<Product> ProductList = _unitOfWork.Product.GetAll(includeProperties:"Category,CoverType");
             return View(ProductList);
         }
-        public IActionResult Details(int Id)
+        public IActionResult Details(int productId)
         {
             ShoppingCart cartObj = new ShoppingCart()
             {
                 Count = 1,
-                Product = _unitOfWork.Product.GetFirstOrDefault(x => x.Id == Id, includeProperties: "Category,CoverType")
+                Product = _unitOfWork.Product.GetFirstOrDefault(x => x.Id == productId, includeProperties: "Category,CoverType")
             };
         
          
