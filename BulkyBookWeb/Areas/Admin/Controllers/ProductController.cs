@@ -65,24 +65,44 @@ namespace BulkyBookWeb.Controllers
             //,IFormFile? file
             if (ModelState.IsValid)
             {
+
                 //save image
                 string wwwRootPath = _hostEnvironment.WebRootPath;
-               // if (file != null)
-               // {
+               if (file != null)
+               {
                     //file is uploaded
                     //make sure file has an unique name
                     string fileName = Guid.NewGuid().ToString();
                     var uploads = Path.Combine(wwwRootPath, @"images\products");
                    var extension = Path.GetExtension(file.FileName);
+                    //there is an existing image it is an update and need to delete old image
+                    //if it is a create ImageUrl is not set til after it is copy to images folder
+                    if (obj.Product.ImageUrl!=null)
+                    {
+                        //delete the old image ImageUrl has an extra \ at the front need to trim it before combine with wwwroot
+                        var oldImagePath = Path.Combine(wwwRootPath, obj.Product.ImageUrl.TrimStart('\\'));
+
+                        if (System.IO.File.Exists(oldImagePath))
+                        {
+                            System.IO.File.Delete(oldImagePath);
+                        }
+                    }
                    using (var fileStreams = new FileStream(Path.Combine(uploads,fileName + extension),FileMode.Create))
                    {
                       file.CopyTo(fileStreams);
                     }
-                    obj.Product.ImageUrl = @"\images\product\" + fileName + extension;
+                    obj.Product.ImageUrl = @"\images\products\" + fileName + extension;
                     //images uploaded and imageurl is set
 
-               // }
-                _unitOfWork.Product.Add(obj.Product);
+               }
+               if (obj.Product.Id==0)
+                {
+                    _unitOfWork.Product.Add(obj.Product);
+                }else
+                {
+                    _unitOfWork.Product.Update(obj.Product);
+                }
+               
                 _unitOfWork.Save();
                 TempData["success"] = "Product added successfully";
                 return RedirectToAction("Index");
@@ -96,37 +116,34 @@ namespace BulkyBookWeb.Controllers
         }
           
       
-       
-        public IActionResult Delete(int? id)
-        {
-            if (id == null || id == 0)
-            {
-                return NotFound();
-            }
-            var categoryFromDb = _unitOfWork.Category.GetFirstOrDefault(x => x.Id == id);
-            if (categoryFromDb == null)
-            {
-                return NotFound();
-            }
-
-            return View(categoryFromDb);
-        }
-        [HttpPost,ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public IActionResult DeletePost(int? id)
-        {
-           var objCategoryFromDB = _unitOfWork.Category.GetFirstOrDefault(x => x.Id == id);
-            _unitOfWork.Category.Remove(objCategoryFromDB);//find primary key update all properties
-            _unitOfWork.Save();
-
-             TempData["success"] = "Category deleted successfully";
-            return RedirectToAction("Index");
-        }
+       //API calls
         [HttpGet]
         public IActionResult GetAll()
         {
             var productList = _unitOfWork.Product.GetAll(includeProperties:"Category,CoverType");
             return Json(new { data = productList });
+        }
+
+        [HttpDelete]
+       
+        public IActionResult Delete(int? id)
+        {
+            var objProductFromDB = _unitOfWork.Product.GetFirstOrDefault(x => x.Id == id);
+            if (objProductFromDB == null)
+            {
+                return Json(new { success = false, message = "Error while deleting" });
+            }
+            var oldImagePath = Path.Combine(_hostEnvironment.WebRootPath, objProductFromDB.ImageUrl.TrimStart('\\'));
+
+            if (System.IO.File.Exists(oldImagePath))
+            {
+                System.IO.File.Delete(oldImagePath);
+            }
+            _unitOfWork.Product.Remove(objProductFromDB);//find primary key update all properties
+            _unitOfWork.Save();
+
+
+            return   Json(new { success = true, message = "Delete Successful" });
         }
     }
 }

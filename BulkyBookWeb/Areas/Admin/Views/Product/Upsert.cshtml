@@ -2,6 +2,10 @@
 @model ProductVM
 
 <form method="post" asp-action="Upsert" enctype="multipart/form-data">
+	<input type="hidden" asp-for="Product.Id"/>
+	<input type="hidden" asp-for="Product.ImageUrl"/>
+	
+
 	<div class="border p-3 mt-4">
 		<div class="row pb-2">
 
@@ -61,13 +65,18 @@
 			</select>
 			<span asp-validation-for="Product.CategoryId" class="text-danger" />
 		</div>
-		<div class="mb-3 col-6">
+		<div class="row">
+		<div class="mb-3 col-8">
 			<label asp-for="Product.CoverTypeId"></label>
 			<select asp-for="Product.CoverTypeId" asp-items="@Model.CoverTypeList" class="form-select">
 				<option disabled selected>--Select Cover Type--</option>
 
 			</select>
 			<span asp-validation-for="Product.CategoryId" class="text-danger" />
+		</div>
+		<div class="col-4">
+			<img src="@Model.Product.ImageUrl" width="100%" style="border-radius:5px;border:1px solid #bbb9b9"/>
+		</div>
 		</div>
 		@if (Model.Product.Id != 0)
 		{
@@ -80,6 +89,7 @@
 		<a asp-controller="Product" asp-action="Index" class="btn btn-secondary" style="width:150px">
 			Back to List
 		</a>
+		
 	</div>
 </form>
 @section Scripts
@@ -88,6 +98,12 @@
 	<partial name="_ValidationScriptsPartial" />
 }
 <script>
+   tinymce.init({
+      selector: 'textarea',
+      plugins: 'advlist autolink lists link image charmap print preview hr anchor pagebreak',
+      toolbar_mode: 'floating',
+   });
+
 		function ValidateInput()
 		{
 			debugger;
