@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace BulkyBook.DAL.Repository.IRepository
 {
-    public interface IOrderDetailRepository : IRepository<OrderHeader>
+    public interface IOrderDetailRepository : IRepository<OrderDetail>
     {
         void Update(OrderDetail obj);
        
