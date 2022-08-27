@@ -13,6 +13,6 @@ namespace BulkyBook.DAL.Repository.IRepository
         void Update(OrderHeader obj);
         void UpdateStatus(int id, string orderStatus, string? paymentStatus = null);
 
-       
+        void UpdateStripePaymentID(int OrderHeaderId, string sessionId, string PaymentIntentId);
     }
 }

@@ -14,11 +14,11 @@ namespace BulkyBook.DAL.Repository
     public class OrderHeaderRepository : Repository<OrderHeader>, IOrderHeaderRepository
     {
         private ApplicationDbContext _db;
-        public OrderHeaderRepository(ApplicationDbContext db):base(db)
+        public OrderHeaderRepository(ApplicationDbContext db) : base(db)
         {
             _db = db;
         }
-       
+
 
         public void Update(OrderHeader obj)
         {
@@ -35,6 +35,15 @@ namespace BulkyBook.DAL.Repository
                 {
                     OrderHeader.PaymentStatus = paymentStatus;
                 }
+            }
+        }
+        public void UpdateStripePaymentID(int OrderHeaderId, string sessionId, string PaymentIntentId)
+        {
+            var OrderHeader = _db.OrderHeaders.FirstOrDefault(x => x.Id == OrderHeaderId);
+            if (OrderHeader != null)
+            {
+                OrderHeader.SessionId = sessionId;
+                OrderHeader.PaymentIntentId = PaymentIntentId;
             }
         }
     }

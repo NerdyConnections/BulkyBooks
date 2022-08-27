@@ -5,8 +5,15 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using BulkyBook.Utility;
+using Stripe;
 
 var builder = WebApplication.CreateBuilder(args);
+
+//extract apsettings.json
+var provider = builder.Services.BuildServiceProvider();
+var configuration = provider.GetService<IConfiguration>();
+SD.BaseUrl = configuration.GetValue<string>("DomainUrls:BaseUrl");
+
 
 // Add services to the container.
 
@@ -18,7 +25,9 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 builder.Services.AddIdentity<IdentityUser,IdentityRole>().AddDefaultTokenProviders()
   .AddEntityFrameworkStores<ApplicationDbContext>();
 //builder.Services.AddDefaultIdentity<IdentityUser>()
-  //.AddEntityFrameworkStores<ApplicationDbContext>();
+//.AddEntityFrameworkStores<ApplicationDbContext>();
+builder.Services.Configure<StripeSettings>(builder.Configuration.GetSection("Stripe"));
+
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddSingleton<IEmailSender, EmailSender>();
 builder.Services.AddRazorPages();
@@ -46,6 +55,7 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
+StripeConfiguration.ApiKey = builder.Configuration.GetSection("Stripe:SecretKey").Get<string>();
 app.UseAuthentication();;
 
 app.UseAuthorization();
