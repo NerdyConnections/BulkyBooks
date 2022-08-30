@@ -10,4 +10,9 @@
     <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="6.0.8" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\BulkyBook.DAL\BulkyBook.DAL.csproj" />
+    <ProjectReference Include="..\BulkyBook.Models\BulkyBook.Models.csproj" />
+  </ItemGroup>
+
 </Project>

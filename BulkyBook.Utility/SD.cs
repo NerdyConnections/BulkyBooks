@@ -1,7 +1,12 @@
-﻿namespace BulkyBook.Utility
+﻿using BulkyBook.DAL.Repository.IRepository;
+using BulkyBook.Models;
+using System.Security.Claims;
+
+namespace BulkyBook.Utility
 {
     public static class SD
     {
+        
         public const string Role_User_Indi = "Individual";
         public const string Role_User_Comp = "Company";
         public const string Role_Admin = "Admin";
@@ -21,5 +26,7 @@
 
         public const string SessionCart = "SessionShoppingCart";
         public static string BaseUrl { get; set; }
+       
+    
     }
 }
