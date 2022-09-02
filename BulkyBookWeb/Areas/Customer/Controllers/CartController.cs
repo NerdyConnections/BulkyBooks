@@ -121,14 +121,14 @@ namespace BulkyBookWeb.Areas.Customer.Controllers
             }
 
             if (applicationUser.CompanyId.GetValueOrDefault() == 0)
-            {//if this is an user
+            {//if this is an user  //Customer has not paid not ready to ship items yet
                 shoppingCartVM.OrderHeader.PaymentStatus = SD.PaymentStatusPending;
 
                 shoppingCartVM.OrderHeader.OrderStatus = SD.StatusPending;
 
             }
             else
-            {//if this is a company
+            {//if this is a company  // it pays when item is paid after 30 days so ready to ship immediately
                 shoppingCartVM.OrderHeader.PaymentStatus = SD.PaymentStatusDelayedPayment;
 
                 shoppingCartVM.OrderHeader.OrderStatus = SD.StatusApproved;
@@ -229,6 +229,7 @@ namespace BulkyBookWeb.Areas.Customer.Controllers
                 //check the stripe status
                 if (session.PaymentStatus.ToLower() == "paid")
                 {
+                    //customer paid , order approved merchant can start shipping
                     _unitOfWork.OrderHeader.UpdateStatus(id, SD.StatusApproved, SD.PaymentStatusApproved);
                     _unitOfWork.Save();
                 }

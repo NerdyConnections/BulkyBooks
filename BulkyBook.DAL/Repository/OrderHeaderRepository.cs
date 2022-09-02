@@ -42,6 +42,7 @@ namespace BulkyBook.DAL.Repository
             var OrderHeader = _db.OrderHeaders.FirstOrDefault(x => x.Id == OrderHeaderId);
             if (OrderHeader != null)
             {
+                OrderHeader.PaymentDate = DateTime.Now;
                 OrderHeader.SessionId = sessionId;
                 OrderHeader.PaymentIntentId = PaymentIntentId;
             }
